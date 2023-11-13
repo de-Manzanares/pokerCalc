@@ -4,7 +4,7 @@ using namespace std;
 
 int main()
 {
-    int HANDS_IN_PLAY = 2;
+    int HANDS_IN_PLAY = 3;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
@@ -37,7 +37,7 @@ int main()
     cout << "\nProbability that your high card is the highest card in play: \n" << endl;
 
     analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
-    simulationHigherCard(1'000'000'000, highCard, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(100'000'000, highCard, deckValues, HANDS_IN_PLAY);
 
     return 0;
 }

@@ -328,7 +328,10 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
     }
 
     else if (handsInPlay == 3) {
-
+        eqEqEqLo = (20 * (el - 2) * (el - 1) * (ll - 2) * (ll - 1) * el * ll) / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
+        eqEqLoLo = (15 * (ll - 3) * (ll - 2) * (ll - 1) * (el - 1 ) * el * ll) / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
+        eqLoLoLo = (6 * (ll - 4) * (ll - 3) * (ll - 2) * (ll - 1) * el * ll) / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
+        probabilityDraw = eqEqEqLo + eqEqLoLo + eqLoLoLo;
     }
 
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
