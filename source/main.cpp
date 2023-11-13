@@ -4,7 +4,7 @@ using namespace std;
 
 int main()
 {
-    int HANDS_IN_PLAY = 1;
+    int HANDS_IN_PLAY = 6;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
@@ -14,10 +14,10 @@ int main()
 
     randomHandAndCommunityCards(hand, table, deck);
 
-    // preflop(deck, hand, "9c", "12d");
-    // flop(deck, table, "6c", "10s", "13c");
-    // turn(deck, table, "4s");
-    // river(deck, table, "12h");
+    // preflop(deck, hand, "10d", "13d");
+    // flop(deck, table, "14h", "12h", "5h");
+    // turn(deck, table, "9s");
+    // river(deck, table, "2c");
 
     cout << "Hand:  ";
     printCards(hand);
@@ -35,9 +35,8 @@ int main()
     cout << "\nYour high card: " << myHighCard(hand) << endl;
     cout << "\nProbability that your high card is the highest card in play: " << endl;
 
-    analyticalHigherCard(myHighCard(hand), tableValues, deckValues);
-    simulationHigherCard(1'000'000, myHighCard(hand), deckValues, HANDS_IN_PLAY);
-
+    analyticalHigherCard(myHighCard(hand), tableValues, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(10'000'000, myHighCard(hand), deckValues, HANDS_IN_PLAY);
 
     return 0;
 }

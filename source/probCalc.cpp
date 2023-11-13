@@ -76,6 +76,8 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
     int countSamples = 0;
     int countMatch = 0;
 
+    vector<int> hands[handsInPlay];
+
     // To reset the deckValues in the loop
     vector<int> copy = deckValues;
 
@@ -84,12 +86,11 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     for (int j = 0; j < SAMPLES; j ++) {
 
+        // Reset deck
         deckValues = copy;
-
-        vector<int> hands[handsInPlay];
+        int cardsDealt = 0;
 
         for (int i = 0; i < handsInPlay; i ++) {
-            int cardsDealt = 0;
             for (int k = 0; k < 2; k ++) {
                 uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
                 index = dis(gen);
@@ -130,7 +131,7 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------
 
-void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck)
+void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay)
 {
     int higherCardsLeftInDeck;
     int higherCardsOnTable = 0;
@@ -146,8 +147,13 @@ void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck)
 
     double p = deck.size() - higherCardsLeftInDeck;
     double q = deck.size();
+    double prob = 1;
 
     cout << "\nAnalytical:   ";
-    cout << ((p / q) * ((p - 1) / (q - 1))) << endl;
-
+    for (int i = 0; i < handsInPlay; i ++) {
+        prob = prob * (p / q) * ((p - 1) / (q - 1));
+        p = p - 2;
+        q = q - 2;
+    }
+    cout << prob << endl;
 }

@@ -36,6 +36,6 @@ void simulationSameHand(int SAMPLES, int targetValue1, int targetValue2);
 
 void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, int handsInPlay);
 
-void analyticalHigherCard(int myHighCard, vector<int>& tableValues, vector<int>& deck);
+void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay);
 
 #endif //POKERCALC_HEADER_H
