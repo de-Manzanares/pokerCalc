@@ -30,12 +30,14 @@ vector<int> getValues(const vector<Card>& deck_1, const vector<Card>& deck_2);
 
 void randomHandAndCommunityCards(vector<Card>& hand, vector<Card>& table, vector<Card>& deck);
 
-int myHighCard(vector<Card> hand);
+int myHighCard_fromCards(vector<Card>& hand);
+
+int myHighCard_fromValues(vector<int>& hand);
 
 void simulationSameHand(int SAMPLES, int targetValue1, int targetValue2);
 
 void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, int handsInPlay);
 
-void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay);
+void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& deck, int handsInPlay);
 
 #endif //POKERCALC_HEADER_H

@@ -1,5 +1,6 @@
 // Calculate probability one hand in play being a 7 and 4
 
+#include "header.h"
 #include <iostream>
 #include <vector>
 #include <random>
@@ -66,7 +67,7 @@ void simulationSameHand(int SAMPLES, int targetValue1, int targetValue2)
               << std::endl;
 }
 
-void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, int handsInPlay)
+void simulationHigherCardOld(int SAMPLES, int myHighCard, vector<int>& deckValues, int handsInPlay)
 {
     random_device rd;
     mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
@@ -119,9 +120,103 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
         }
     }
 
+    double probabilityLose = ((double) countMatch) / (double) countSamples;
+
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    cout << "Experimental: " << 1 - ((double) countMatch) / (double) countSamples << endl;
+    cout << "Experimental   Win:  " << 1 - probabilityLose << endl;
+    cout << "               Draw: " << endl;
+    cout << "               Lose: " << probabilityLose;
+    cout << endl;
     cout << "Matches: " << countMatch << endl;
+    cout << "Samples: " << countSamples << endl;
+    std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
+              << std::endl;
+}
+
+void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, int handsInPlay)
+{
+    random_device rd;
+    mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
+    vector<int> randHand = {};
+    int card;
+    int index;
+    int countSamples = 0;
+    int countHigher = 0;
+    int countEqual = 0;
+    bool foundHigher = false;
+    bool foundEqual = false;
+
+    vector<int> hands[handsInPlay];
+
+    // To reset the deckValues in the loop
+    vector<int> copy = deckValues;
+
+    int indexLimit = deckValues.size() - 1;
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    for (int j = 0; j < SAMPLES; j ++) {
+
+        // Reset deck
+        deckValues = copy;
+        int cardsDealt = 0;
+
+        for (int i = 0; i < handsInPlay; i ++) {
+            for (int k = 0; k < 2; k ++) {
+                uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+                index = dis(gen);
+                card = deckValues[index];
+                hands[i].push_back(card);
+                deckValues.erase(deckValues.begin() + index);
+                cardsDealt ++;
+            }
+        }
+
+        // Find 1 higher card from the hands.
+        foundHigher = false;
+        for (int i = 0; i < handsInPlay; i ++) {
+            for (int k = 0; k < 2; k ++) {
+                if (hands[i][k] > myHighCard) {
+                    if (! foundHigher) {
+                        countHigher ++;
+                        foundHigher = true;
+                    }
+                }
+            }
+        }
+
+        // Find one equal card from the hands if
+        // a higher card was not found.
+        foundEqual = false;
+        if (! foundHigher) {
+            for (int i = 0; i < handsInPlay; i ++) {
+                for (int k = 0; k < 2; k ++) {
+                    if (hands[i][k] == myHighCard) {
+                        if (! foundEqual) {
+                            countEqual ++;
+                            foundEqual = true;
+                        }
+                    }
+                }
+            }
+        }
+
+        countSamples ++;
+
+        for (int i = 0; i < handsInPlay; i ++) {
+            hands[i].clear();
+        }
+    }
+
+    double probabilityLose = ((double) countHigher) / (double) countSamples;
+    double probabilityDraw = ((double) countEqual) / (double) countSamples;
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    cout << "Experimental   Win:  " << 1 - probabilityLose - probabilityDraw << endl;
+    cout << "               Draw: " << probabilityDraw << endl;
+    cout << "               Lose: " << probabilityLose;
+    cout << endl;
+    cout << "Higher : " << countHigher << endl;
+    cout << "Equal  : " << countEqual << endl;
     cout << "Samples: " << countSamples << endl;
     std::cout << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
               << std::endl;
@@ -131,7 +226,7 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------
 
-void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay)
+void analyticalHigherCardOld(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay)
 {
     int higherCardsLeftInDeck;
     int higherCardsOnTable = 0;
@@ -149,11 +244,97 @@ void analyticalHigherCard(int myHighCard, vector<int>& table, vector<int>& deck,
     double q = deck.size();
     double prob = 1;
 
-    cout << "\nAnalytical:   ";
     for (int i = 0; i < handsInPlay; i ++) {
         prob = prob * (p / q) * ((p - 1) / (q - 1));
         p = p - 2;
         q = q - 2;
     }
-    cout << prob << endl;
+
+    cout << "Analytical:    Win:  " << prob << endl;
+    cout << "               Draw: " << endl;
+    cout << "               Lose: " << endl << endl;
+}
+
+void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& deck, int handsInPlay)
+{
+    int higherCardsLeftInDeck;
+    int equalCardsLeftInDeck = 4;
+    int lowerCardsLeftInDeck = 0;
+    int higherCardsOnTable = 0;
+    double p;
+    double q;
+    double probabilityNotLose = 1;
+    double probabilityDraw_1 = 1;
+    double probabilityDraw;
+    int deckSize = deck.size();
+
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+    int highCard = myHighCard_fromValues(hand);
+
+    // Count the higher cards on the table
+    for (int i = 0; i < table.size(); i ++) {
+        if (table[i] > highCard) {
+            higherCardsOnTable ++;
+        }
+    }
+
+    higherCardsLeftInDeck = ((14 - highCard) * 4 - higherCardsOnTable);
+
+    p = deckSize - higherCardsLeftInDeck;
+    q = deckSize;
+
+    for (int i = 0; i < handsInPlay; i ++) {
+        probabilityNotLose = probabilityNotLose * (p / q) * ((p - 1) / (q - 1));
+        p = p - 2;
+        q = q - 2;
+    }
+
+    for (int i = 0; i < hand.size(); i ++) {
+        if (hand[i] == highCard) {
+            equalCardsLeftInDeck --;
+        }
+    }
+    for (int i = 0; i < table.size(); i ++) {
+        if (table[i] == highCard) {
+            equalCardsLeftInDeck --;
+        }
+    }
+
+    lowerCardsLeftInDeck = deckSize - higherCardsLeftInDeck - equalCardsLeftInDeck;
+
+    double eqEq;
+    double eqLo;
+    double LoEq;
+    double eqEqEqLo;
+    double eqEqLoLo;
+    double eqLoLoLo;
+
+    auto el = (double) equalCardsLeftInDeck;
+    auto ll = (double) lowerCardsLeftInDeck;
+    auto L = (double) deckSize;
+
+    if (handsInPlay == 1) {
+        eqEq = ((double) equalCardsLeftInDeck / deckSize) * (((double) equalCardsLeftInDeck - 1) / (deckSize - 1));
+        eqLo = ((double) equalCardsLeftInDeck / deckSize) * ((double) lowerCardsLeftInDeck / (deckSize - 1));
+        LoEq = ((double) lowerCardsLeftInDeck / deckSize) * ((double) (equalCardsLeftInDeck) / (deckSize - 1));
+        probabilityDraw = eqEq + eqLo + LoEq;
+    }
+
+    else if (handsInPlay == 2) {
+        eqEqEqLo = (4 * (el - 2) * (el - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
+        eqEqLoLo = (6 * (el - 1) * (ll - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
+        eqLoLoLo = (4 * (ll - 2) * (ll - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
+        probabilityDraw = eqEqEqLo + eqEqLoLo + eqLoLoLo;
+    }
+
+    else if (handsInPlay == 3) {
+
+    }
+
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cout << "Analytical:    Win:  " << probabilityNotLose - probabilityDraw << endl;
+    cout << "               Draw: " << probabilityDraw << endl;
+    cout << "               Lose: " << 1 - probabilityNotLose << endl;
+    cout << "Time: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " ms" << endl << endl;
 }

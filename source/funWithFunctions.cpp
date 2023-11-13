@@ -145,7 +145,7 @@ void randomHandAndCommunityCards(vector<Card>& hand, vector<Card>& table, vector
     }
 }
 
-int myHighCard(vector<Card> hand)
+int myHighCard_fromCards(vector<Card>& hand)
 {
     int highCard = 0;
     for (const auto& card: hand) {
@@ -156,3 +156,13 @@ int myHighCard(vector<Card> hand)
     return highCard;
 }
 
+int myHighCard_fromValues(vector<int>& hand)
+{
+    int highCard = 0;
+    for (int i = 0; i < hand.size(); i ++) {
+        if (hand[i] > highCard) {
+            highCard = hand[i];
+        }
+    }
+    return highCard;
+}
