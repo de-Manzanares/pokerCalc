@@ -31,10 +31,10 @@ High(c): The count of cards of a higher rank than a given card in E.
 
 With the current rules, a draw is when two or more players share the high card. 
 
-```math
+$$
 \sum _{i=0}^{b-1} \frac{a!\left[\prod _{j=0}^{b-i-1} (e-j)\right] \left[\prod _{k=0}^{c+i-1} (l-k)\right]} {(b-i)! (
 c+i)!\left[\prod_{m=0}^{a-1} (L-m)\right]} 
-```
+$$
 
 $a$ is the count of cards dealt to other players;
 
