@@ -166,3 +166,40 @@ int myHighCard_fromValues(vector<int>& hand)
     }
     return highCard;
 }
+
+int factorial(int n)
+{
+    int m = 1;
+
+    if (n == 0 || n == 1) {
+        m = 1;
+    }
+    else {
+        // even
+        if (! (n % 2)) {
+            do {
+                m = m * n * (n - 1);
+                n = n - 2;
+            }
+            while (n > 1);
+        }
+            // odd
+        else if (n % 2) {
+            do {
+                m = m * n * (n - 1);
+                n = n - 2;
+            }
+            while (n > 2);
+        }
+    }
+    return m;
+}
+
+double sigma (int n, int N, double expr)
+{
+    double sum = 0;
+    for (int i = n; i <=N; i++){
+        sum += expr;
+    }
+    return sum;
+}

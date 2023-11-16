@@ -40,4 +40,8 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
 
 void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& deck, int handsInPlay);
 
+int factorial (int n);
+
+double sigma (int n, int N, double expr);
+
 #endif //POKERCALC_HEADER_H
