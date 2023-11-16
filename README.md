@@ -36,6 +36,8 @@ $$
 c+i)!\left[\prod_{m=0}^{a-1} (L-m)\right]} 
 $$
 
+![](images/simpleDrawProb.png)
+
 $a$ is the count of cards dealt to other players;
 
 $b = 3$ (the count of suits in the deck less one);
