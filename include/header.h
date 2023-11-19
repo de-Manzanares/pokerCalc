@@ -3,6 +3,9 @@
 
 #include <vector>
 #include <iostream>
+#include <gmp.h>
+#include <gmpxx.h>
+
 
 using namespace std;
 
@@ -44,6 +47,6 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
 
 int factorial (int n);
 
-double sigma (int n, int N, double expr);
+void factorial_mpf (int n, mpf_t& result);
 
 #endif //POKERCALC_HEADER_H

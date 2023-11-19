@@ -5,6 +5,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 include_directories(include)
 
+
 add_executable(pokerCalc source/main.cpp
         source/probCalc.cpp
         source/funWithFunctions.cpp)
+
+target_link_libraries(pokerCalc gmp gmpxx)

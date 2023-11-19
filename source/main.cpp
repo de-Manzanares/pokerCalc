@@ -4,21 +4,27 @@ using namespace std;
 
 int main()
 {
-    // int HANDS_IN_PLAY = randomHandsInPlay();
-    int HANDS_IN_PLAY = 7;
+    bool DEBUG = false;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
     vector<Card> table = {};
+    int HANDS_IN_PLAY;
 
     initializeDeck(deck);
 
-    // randomHandAndCommunityCards(hand, table, deck);
-
-    preflop(deck, hand, "11d", "12d");
-    flop(deck, table, "11c", "12h", "8h");
-    turn(deck, table, "13h");
-    river(deck, table, "7s");
+    if (DEBUG) {
+        cout << "DEBUG MODE" << endl;
+        HANDS_IN_PLAY = 1;
+        preflop(deck, hand, "11d", "12d");
+        flop(deck, table, "11c", "12h", "8h");
+        turn(deck, table, "13h");
+        river(deck, table, "7s");
+    }
+    else if (!DEBUG){
+        HANDS_IN_PLAY = randomHandsInPlay();
+        randomHandAndCommunityCards(hand, table, deck);
+    }
 
     cout << "Hand:  ";
     printCards(hand);
