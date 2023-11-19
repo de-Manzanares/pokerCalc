@@ -4,7 +4,8 @@ using namespace std;
 
 int main()
 {
-    int HANDS_IN_PLAY = 1;
+    // int HANDS_IN_PLAY = randomHandsInPlay();
+    int HANDS_IN_PLAY = 7;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
@@ -12,12 +13,12 @@ int main()
 
     initializeDeck(deck);
 
-    randomHandAndCommunityCards(hand, table, deck);
+    // randomHandAndCommunityCards(hand, table, deck);
 
-    // preflop(deck, hand, "6c", "7s");
-    // flop(deck, table, "2h", "13h", "6d");
-    // turn(deck, table, "12s");
-    // river(deck, table, "12c");
+    preflop(deck, hand, "11d", "12d");
+    flop(deck, table, "11c", "12h", "8h");
+    turn(deck, table, "13h");
+    river(deck, table, "7s");
 
     cout << "Hand:  ";
     printCards(hand);

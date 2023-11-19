@@ -28,6 +28,8 @@ vector<int> getValues(const vector<Card>& deck_1);
 
 vector<int> getValues(const vector<Card>& deck_1, const vector<Card>& deck_2);
 
+int randomHandsInPlay();
+
 void randomHandAndCommunityCards(vector<Card>& hand, vector<Card>& table, vector<Card>& deck);
 
 int myHighCard_fromCards(vector<Card>& hand);

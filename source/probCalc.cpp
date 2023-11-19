@@ -211,6 +211,7 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
     double probabilityDraw = ((double) countEqual) / (double) countSamples;
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
     cout << "Experimental   Win:  " << 1 - probabilityLose - probabilityDraw << endl;
     cout << "               Draw: " << probabilityDraw << endl;
     cout << "               Lose: " << probabilityLose;
@@ -226,35 +227,6 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int>& deckValues, 
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------
 
-void analyticalHigherCardOld(int myHighCard, vector<int>& table, vector<int>& deck, int handsInPlay)
-{
-    int higherCardsLeftInDeck;
-    int higherCardsOnTable = 0;
-
-    // Count the higher cards on the table
-    for (int i = 0; i < table.size(); i ++) {
-        if (table[i] > myHighCard) {
-            higherCardsOnTable ++;
-        }
-    }
-
-    higherCardsLeftInDeck = ((14 - myHighCard) * 4 - higherCardsOnTable);
-
-    double p = deck.size() - higherCardsLeftInDeck;
-    double q = deck.size();
-    double prob = 1;
-
-    for (int i = 0; i < handsInPlay; i ++) {
-        prob = prob * (p / q) * ((p - 1) / (q - 1));
-        p = p - 2;
-        q = q - 2;
-    }
-
-    cout << "Analytical:    Win:  " << prob << endl;
-    cout << "               Draw: " << endl;
-    cout << "               Lose: " << endl << endl;
-}
-
 void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& deck, int handsInPlay)
 {
     int higherCardsLeftInDeck;
@@ -264,7 +236,7 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
     double p;
     double q;
     double probabilityNotLose = 1;
-    double probabilityDraw;
+    long double probabilityDraw = 0;
     int deckSize = deck.size();
 
     chrono::steady_clock::time_point begin = chrono::steady_clock::now();
@@ -279,6 +251,7 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
 
     higherCardsLeftInDeck = ((14 - highCard) * 4 - higherCardsOnTable);
 
+    // Caclulate the probability of not losing
     p = deckSize - higherCardsLeftInDeck;
     q = deckSize;
 
@@ -288,6 +261,7 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
         q = q - 2;
     }
 
+    // Count the equal cards left in the deck
     for (int i = 0; i < hand.size(); i ++) {
         if (hand[i] == highCard) {
             equalCardsLeftInDeck --;
@@ -299,66 +273,33 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
         }
     }
 
+    // Count the lower cards left in the deck
     lowerCardsLeftInDeck = deckSize - higherCardsLeftInDeck - equalCardsLeftInDeck;
 
-    double eqEq;
-    double eqLo;
-    double LoEq;
-    double eqEqEqLo;
-    double eqEqLoLo;
-    double eqLoLoLo;
-
-    auto el = (double) equalCardsLeftInDeck;
-    auto ll = (double) lowerCardsLeftInDeck;
-    auto L = (double) deckSize;
-
-    if (handsInPlay == 1) {
-        eqEq = ((double) equalCardsLeftInDeck / deckSize) * (((double) equalCardsLeftInDeck - 1) / (deckSize - 1));
-        eqLo = ((double) equalCardsLeftInDeck / deckSize) * ((double) lowerCardsLeftInDeck / (deckSize - 1));
-        LoEq = ((double) lowerCardsLeftInDeck / deckSize) * ((double) (equalCardsLeftInDeck) / (deckSize - 1));
-        probabilityDraw = eqEq + eqLo + LoEq;
-    }
-
-    else if (handsInPlay == 2) {
-        eqEqEqLo = (4 * (el - 2) * (el - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
-        eqEqLoLo = (6 * (el - 1) * (ll - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
-        eqLoLoLo = (4 * (ll - 2) * (ll - 1) * el * ll) / ((L - 3) * (L - 2) * (L - 1) * L);
-        probabilityDraw = eqEqEqLo + eqEqLoLo + eqLoLoLo;
-    }
-
-    else if (handsInPlay == 3) {
-        eqEqEqLo = (20 * (el - 2) * (el - 1) * (ll - 2) * (ll - 1) * el * ll)
-                / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
-        eqEqLoLo = (15 * (ll - 3) * (ll - 2) * (ll - 1) * (el - 1) * el * ll)
-                / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
-        eqLoLoLo = (6 * (ll - 4) * (ll - 3) * (ll - 2) * (ll - 1) * el * ll)
-                / ((L - 5) * (L - 4) * (L - 3) * (L - 2) * (L - 1) * L);
-        probabilityDraw = eqEqEqLo + eqEqLoLo + eqLoLoLo;
-    }
-
-    // le formula
+    // Calculate draw probability using the formula
     int a = handsInPlay * 2;
     int b = 3;
     int c = a - b;
     double e = equalCardsLeftInDeck;
     double l = lowerCardsLeftInDeck;
-    double d = deckSize;
-    long double sum = 0;
+    auto L = (long double) deckSize;
     long double pms;     // Permutations of the multiset
     double prod_e = 1;
     double prod_l = 1;
+    // TODO apply arbitrary precision arithmetic
     long long int prod_L = 1;
 
-    // TODO fix precision issues
     // begin sigma loop
     for (int i = 0; i < b; i ++) {
-        pms = (double) factorial(a) / (factorial(b - i) * factorial(c + i));
+        pms = factorial(a) / (factorial(b - i) * factorial(c + i));
+        // for debuggin
         cout << "pms: " << pms << endl;
 
         // product loop equal cards
         prod_e = 1; // reset
         for (int j = 0; j <= (b - i - 1); j ++) {
             prod_e = prod_e * (e - j);
+            // for debugging
             cout << "prod_e: " << prod_e << endl;
         }
 
@@ -366,6 +307,7 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
         prod_l = 1; // reset
         for (int k = 0; k <= (c + i - 1); k ++) {
             prod_l = prod_l * (l - k);
+            // for debugging
             cout << "prod_l: " << prod_l << endl;
         }
 
@@ -373,21 +315,22 @@ void analyticalHigherCard(vector<int>& hand, vector<int>& table, vector<int>& de
         prod_L = 1; // reset
         for (int m = 0; m <= (a - 1); m ++) {
             prod_L = prod_L * (L - m);
+            // for debugging
             cout << "prod_L: " << prod_L << endl;
         }
 
-        sum += pms * (((long double) prod_e * prod_l) / (long double) prod_L);
-        cout << "sum: " << sum << endl;
+        probabilityDraw += pms * (((long double) prod_e * prod_l) / (long double) prod_L);
     }
-    cout << "a: " << a << endl;
-    cout << "b: " << b << endl;
-    cout << "e: " << e << endl;
-    cout << "l: " << l << endl;
 
     chrono::steady_clock::time_point end = chrono::steady_clock::now();
 
-    cout << "Analytical:    Win:  " << probabilityNotLose - probabilityDraw << endl;
+    cout << "Analytical     Win:  " << probabilityNotLose - probabilityDraw << endl;
     cout << "               Draw: " << probabilityDraw << endl;
     cout << "               Lose: " << 1 - probabilityNotLose << endl;
-    cout << "Time: " << chrono::duration_cast<chrono::nanoseconds>(end - begin).count() << " ns" << endl << endl;
+    // for checking precision
+    cout << "a = " << a << endl;
+    cout << "b = " << b << endl;
+    cout << "e = " << e << endl;
+    cout << "l = " << l << endl;
+    cout << "Time: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " ms" << endl << endl;
 }

@@ -120,6 +120,14 @@ vector<int> getValues(const vector<Card>& deck_1, const vector<Card>& deck_2)
     return values;
 }
 
+int randomHandsInPlay()
+{
+    random_device rd;
+    mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
+    uniform_int_distribution<> dis(1, 9);
+    return dis(gen);
+}
+
 void randomHandAndCommunityCards(vector<Card>& hand, vector<Card>& table, vector<Card>& deck)
 {
     random_device rd;
