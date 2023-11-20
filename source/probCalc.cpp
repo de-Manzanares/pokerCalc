@@ -72,7 +72,6 @@ void simulationSameHand(int SAMPLES, int targetValue1, int targetValue2) {
 void simulationHigherCard(int SAMPLES, int myHighCard, vector<int> &deckValues, int handsInPlay) {
     random_device rd;
     mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
-    vector<int> randHand = {};
     int card;
     int index;
     int countSamples = 0;
@@ -159,7 +158,7 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int> &deckValues, 
               << std::endl;
 }
 
-void simulationPair(int SAMPLES) {
+void simulationPairOld(int SAMPLES) {
     random_device rd;
     mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
     vector<Card> deck = {};
@@ -218,13 +217,102 @@ void simulationPair(int SAMPLES) {
 
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
-    cout << "Frequency : " << (double) countPair/countSamples << endl;
+    cout << "Frequency : " << (double) countPair / countSamples << endl;
     cout << "Pair found: " << countPair << endl;
     cout << "Samples   : " << countSamples << endl;
     cout << "Time:  " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
          << std::endl;
 }
 
+void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValues, vector<int> &deckValues,
+                    int handsInPlay) {
+    random_device rd;
+    mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
+    vector<int> hands[handsInPlay];
+    vector<int> myPair = getPair(handValues, tableValues);
+    vector<int> theirPair = {};
+    vector<int> temp = {};
+    int card;
+    int index;
+    int countSamples = 0;
+    int countHigher = 0;
+    int countNoOtherPairs = 0;
+    int countLowerPair = 0;
+    int countEqualPair = 0;
+    int countHigherPair = 0;
+    double probabilityLose;
+    double probabilityDraw;
+
+    // To reset the deckValues in the loop
+    vector<int> copy = deckValues;
+
+    int indexLimit = deckValues.size() - 1;
+
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+
+    for (int j = 0; j < SAMPLES; j++) {
+
+        // Reset deck and opponent hole cards
+        deckValues = copy;
+        int cardsDealt = 0;
+        theirPair = {0, 0};
+        temp = {0, 0};
+        for (int i = 0; i < handsInPlay; i++) {
+            hands[i].clear();
+        }
+
+        // Deal the hands
+        for (int i = 0; i < handsInPlay; i++) {
+            for (int k = 0; k < 2; k++) {
+                uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+                index = dis(gen);
+                card = deckValues[index];
+                hands[i].push_back(card);
+                deckValues.erase(deckValues.begin() + index);
+                cardsDealt++;
+            }
+        }
+
+        // Find the highest pair from the opponents hands
+        for (int i = 0; i < handsInPlay; i++) {
+            temp = getPair(hands[i], tableValues);
+            if (temp[0] > theirPair[0]) {
+                theirPair = temp;
+            }
+        }
+
+        // Compare to your pair
+        if (theirPair[0] == 0) {
+            countNoOtherPairs++;
+        } else if (theirPair[0] < myPair[0]) {
+            countLowerPair++;
+        } else if (theirPair[0] == myPair[0]) {
+            countEqualPair++;
+        } else if (theirPair[0] > myPair[0]) {
+            countHigherPair++;
+        }
+        countSamples++;
+    }
+
+
+    probabilityLose = (double) countHigherPair / countSamples;
+    probabilityDraw = (double) countEqualPair / countSamples;
+
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+    cout << "Experimental   Win:  " << 1 - probabilityLose - probabilityDraw << endl;
+    cout << "               Draw: " << probabilityDraw << endl;
+    cout << "               Lose: " << probabilityLose;
+    cout << endl << endl;
+
+    cout << "Higher Pair  : " << countHigherPair << endl
+         << "Equal Pair   : " << countEqualPair << endl
+         << "Lower Pair   : " << countLowerPair << endl
+         << "No Pair      : " << countNoOtherPairs << endl
+         << "Samples      : " << SAMPLES << endl
+         << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
+         << std::endl;
+}
 //----------------------------------------------------------------------------------------------------------------------
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------

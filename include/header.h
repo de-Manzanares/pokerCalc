@@ -55,4 +55,7 @@ bool getPair_bool(vector<int> handValues, vector<int> tableValues);
 
 void simulationPair(int SAMPLES);
 
+void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValues, vector<int> &deckValues,
+                    int handsInPlay);
+
 #endif //POKERCALC_HEADER_H

@@ -47,12 +47,14 @@ int main() {
     cout << endl << endl;
 
 
-    vector<int> pair = getPair(handValues,tableValues);
+    vector<int> pair = getPair(handValues, tableValues);
 
     cout << "Your pair: " << pair[0] << " " << pair[1] << endl << endl;
     cout << "Probability that your pair is the highest in play:\n";
     cout << "---------------------------------------------------------------\n" << endl;
-    //simulationPair(100'000);
+    //simulationPairOld(100'000);
+    simulationPair(1'000'000, handValues, tableValues, deckValues,
+                   HANDS_IN_PLAY);
 
     return 0;
 }
