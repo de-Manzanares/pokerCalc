@@ -2,9 +2,8 @@
 
 using namespace std;
 
-int main()
-{
-    bool DEBUG = false;
+int main() {
+    bool DEBUG = true;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
@@ -16,12 +15,11 @@ int main()
     if (DEBUG) {
         cout << "DEBUG MODE" << endl;
         HANDS_IN_PLAY = 1;
-        preflop(deck, hand, "11d", "12d");
-        flop(deck, table, "11c", "12h", "8h");
-        turn(deck, table, "13h");
-        river(deck, table, "7s");
-    }
-    else if (!DEBUG){
+        preflop(deck, hand, "11h", "12d");
+        flop(deck, table, "5s", "12c", "13d");
+        turn(deck, table, "10h");
+        river(deck, table, "9h");
+    } else if (!DEBUG) {
         HANDS_IN_PLAY = randomHandsInPlay();
         randomHandAndCommunityCards(hand, table, deck);
     }
@@ -41,10 +39,20 @@ int main()
     int highCard = myHighCard_fromCards(hand);
 
     cout << "\nYour high card: " << highCard << endl;
-    cout << "\nProbability that your high card is the highest card in play: \n" << endl;
+    cout << "\nProbability that your high card is the highest card in play: \n";
+    cout << "---------------------------------------------------------------\n" << endl;
 
     analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
     simulationHigherCard(100'000, highCard, deckValues, HANDS_IN_PLAY);
+    cout << endl << endl;
+
+
+    vector<int> pair = getPair(handValues,tableValues);
+
+    cout << "Your pair: " << pair[0] << " " << pair[1] << endl << endl;
+    cout << "Probability that your pair is the highest in play:\n";
+    cout << "---------------------------------------------------------------\n" << endl;
+    //simulationPair(100'000);
 
     return 0;
 }
