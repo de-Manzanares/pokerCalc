@@ -53,8 +53,7 @@ int main() {
     cout << "Probability that your pair is the highest in play:\n";
     cout << "---------------------------------------------------------------\n" << endl;
     //simulationPairOld(100'000);
-    simulationPair(1'000'000'000, handValues, tableValues, deckValues,
-                   HANDS_IN_PLAY);
+    simulationPair(1'000'000, handValues, tableValues, deckValues,HANDS_IN_PLAY);
 
     return 0;
 }

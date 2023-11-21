@@ -142,6 +142,9 @@ void simulationHigherCard(int SAMPLES, int myHighCard, vector<int> &deckValues, 
         }
     }
 
+    // reset deck for next simulation
+    deckValues = copy;
+
     double probabilityLose = ((double) countHigher) / (double) countSamples;
     double probabilityDraw = ((double) countEqual) / (double) countSamples;
 
@@ -235,7 +238,6 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
     int card;
     int index;
     int countSamples = 0;
-    int countHigher = 0;
     int countNoOtherPairs = 0;
     int countLowerPair = 0;
     int countEqualPair = 0;
@@ -302,7 +304,8 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
     cout << "Experimental   Win:  " << 1 - probabilityLose - probabilityDraw << endl;
-    cout << "               Draw: " << probabilityDraw << endl;
+    cout << "               Draw: " << probabilityDraw << "\tPercent diff. : "
+         << (abs(probabilityDraw - (1.0 / 990.0)) * 100) / (1.0 / 990.0) << endl;
     cout << "               Lose: " << probabilityLose;
     cout << endl << endl;
 
