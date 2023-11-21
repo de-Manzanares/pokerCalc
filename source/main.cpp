@@ -15,7 +15,7 @@ int main() {
     if (DEBUG) {
         cout << "DEBUG MODE" << endl;
         HANDS_IN_PLAY = 1;
-        preflop(deck, hand, "11h", "12d");
+        preflop(deck, hand, "14h", "14d");
         flop(deck, table, "5s", "12c", "13d");
         turn(deck, table, "10h");
         river(deck, table, "9h");
@@ -53,7 +53,7 @@ int main() {
     cout << "Probability that your pair is the highest in play:\n";
     cout << "---------------------------------------------------------------\n" << endl;
     //simulationPairOld(100'000);
-    simulationPair(1'000'000, handValues, tableValues, deckValues,
+    simulationPair(1'000'000'000, handValues, tableValues, deckValues,
                    HANDS_IN_PLAY);
 
     return 0;

@@ -278,6 +278,7 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
             temp = getPair(hands[i], tableValues);
             if (temp[0] > theirPair[0]) {
                 theirPair = temp;
+                // cout << "Hand " << i << ": " << theirPair[0] << " " << theirPair[1] << endl;
             }
         }
 
