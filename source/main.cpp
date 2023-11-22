@@ -4,6 +4,13 @@ using namespace std;
 
 int main() {
 
+    simulation();
+
+    return 0;
+}
+
+int mainOld() {
+
     vector<Card> deck = {};
     vector<Card> hand = {};
     vector<Card> table = {};

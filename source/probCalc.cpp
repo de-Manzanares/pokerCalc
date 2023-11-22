@@ -317,9 +317,157 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
          << std::endl;
 }
 
-void simulationHighCardWithRiver() {
+void simulation() {
 
+    int numberOfPlayers = 9;
+
+    random_device rd;
+    mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
+    int cardsDealt = 0;     // To not exceed decreased deck indices as cards are dealt
+    int indexLimit;         // To reduce system calls to deck.size();
+    int index;              // For dealing cards
+    Card card;              // Card to be dealt
+
+    // Sets of cards
+    vector<Card> communityCards;
+    vector<Card> deck;
+    vector<Card> holeCards[9];  // Sets of hole cards for 9 players
+    vector<Card> knownCards;    // For counting cards, four of a kind, three of a kind, etc
+    vector<Hand> hands(9);      // To create hands of the five best cards for each player
+
+    initializeDeck(deck);    // Standard deck, 13 values, 4 suits.
+    indexLimit = 52 - 1;
+
+    // Deal hole cards to players
+    // A. First card to each player B. Second card to each player ... because why not?
+    // First card to each player
+    for (int i = 0; i < numberOfPlayers; i++) {
+        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+        index = dis(gen);
+        card = deck[index];
+        holeCards[i].push_back(card);
+        deck.erase(deck.begin() + index);
+        cardsDealt++;
+    }
+    // Second card to each player
+    for (int i = 0; i < numberOfPlayers; i++) {
+        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+        index = dis(gen);
+        card = deck[index];
+        holeCards[i].push_back(card);
+        deck.erase(deck.begin() + index);
+        cardsDealt++;
+    }
+
+    // Print hole cards
+    cout << "\nHole Cards:\n\n";
+    for (int i = 0; i < numberOfPlayers; i++) {
+        cout << "Player " << i + 1 << ": ";
+        printCards(holeCards[i]);
+    }
+
+    // Deal community cards
+    // Leaving out burn cards because it won't affect probabilities
+    // Flop
+    for (int i = 0; i < 3; i++) {
+        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+        index = dis(gen);
+        card = deck[index];
+        communityCards.push_back(card);
+        deck.erase(deck.begin() + index);
+        cardsDealt++;
+    }
+    // Turn
+    for (int i = 0; i < 1; i++) {
+        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+        index = dis(gen);
+        card = deck[index];
+        communityCards.push_back(card);
+        deck.erase(deck.begin() + index);
+        cardsDealt++;
+    }
+    // River
+    for (int i = 0; i < 1; i++) {
+        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+        index = dis(gen);
+        card = deck[index];
+        communityCards.push_back(card);
+        deck.erase(deck.begin() + index);
+        cardsDealt++;
+    }
+
+    // Print community cards
+    cout << "\n\nCommunity Cards:\n\n";
+    printCards(communityCards);
+
+    // Make hands
+    // First, detect four of a kind
+    // Only one four of a kind is possible per hand, two across all the players
+
+    // Populate known cards with community cards
+    for (int i = 0; i < 5; i++) {
+        knownCards.push_back(communityCards[i]);
+    }
+
+    for (int i = 0; i < numberOfPlayers; i++) {
+        // Clear hole cards
+        while (knownCards.size() > 5){
+            knownCards.pop_back();
+        }
+
+        // Populate known cards with hole cards
+        for (int j = 0; i < 2; i++) {
+            knownCards.push_back(holeCards[i][j]);
+        }
+
+        // Count cards to find four of a kind
+    }
+
+
+    /*
+    for (int i = 0; i < numberOfPlayers; i++) {
+
+        bool pocketPair = false;
+
+        // Check for pair in hole cards
+        if (holeCards[i][0].value == holeCards[i][1].value) {
+            for (int j = 0; j < 2; j++) {
+                hands[i].fiveCards.push_back(holeCards[i][j]);
+                hands[i].pair++;
+                pocketPair = true;
+            }
+        }
+
+        // Check for pair with table
+        if (!pocketPair) {
+            for (int j = 0; j < 2; j++) {
+                for (int k = 0; k < 5; k++) {
+                    if (holeCards[i][j].value == communityCards[k].value) {
+                        hands[i].fiveCards.push_back(holeCards[i][j]);
+                        hands[i].fiveCards.push_back(communityCards[k]);
+                        hands[i].pair++;
+                    }
+                }
+            }
+        }
+    }
+
+
+    // Check pair
+    cout << "\n\nPair: \n\n";
+    for (int i = 0; i<numberOfPlayers; i++){
+        if (hands[i].pair > 0){
+            cout << "Player " << i+1 << ": ";
+            for (int j=0; j<hands[i].fiveCards.size(); j++){
+                cout << hands[i].fiveCards[j].id << " ";
+            }
+            cout << endl;
+        }
+    }
+    */
 }
+
+
 //----------------------------------------------------------------------------------------------------------------------
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------

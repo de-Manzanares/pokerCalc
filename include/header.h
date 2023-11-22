@@ -15,6 +15,13 @@ struct Card {
     string id;
 };
 
+struct Hand {
+    int fourOfAKind;
+    int threeOfAKind;
+    int pair = 0;
+    vector<Card> fiveCards = {};
+};
+
 void initializeDeck(vector<Card> &deck);
 
 void preflop(vector<Card> &deck, vector<Card> &hand, string cardID_1, string cardID_2);
@@ -63,5 +70,7 @@ void analyticalPair(vector<int> &hand, vector<int> &table, vector<int> &deck, in
 void simulationHighCardWithRiver();
 
 void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int handsInPlay);
+
+void simulation();
 
 #endif //POKERCALC_HEADER_H
