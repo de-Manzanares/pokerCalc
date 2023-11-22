@@ -404,25 +404,6 @@ void simulation() {
     // First, detect four of a kind
     // Only one four of a kind is possible per hand, two across all the players
 
-    // Populate known cards with community cards
-    for (int i = 0; i < 5; i++) {
-        knownCards.push_back(communityCards[i]);
-    }
-
-    for (int i = 0; i < numberOfPlayers; i++) {
-        // Clear hole cards
-        while (knownCards.size() > 5){
-            knownCards.pop_back();
-        }
-
-        // Populate known cards with hole cards
-        for (int j = 0; i < 2; i++) {
-            knownCards.push_back(holeCards[i][j]);
-        }
-
-        // Count cards to find four of a kind
-    }
-
 
     /*
     for (int i = 0; i < numberOfPlayers; i++) {

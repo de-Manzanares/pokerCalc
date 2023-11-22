@@ -4,7 +4,43 @@ using namespace std;
 
 int main() {
 
-    simulation();
+    // simulation();
+
+    vector<Card> holeCards[9];
+    vector<Card> communityCards;
+    vector<Card> deck;
+    vector<Card> knownCards;
+    vector<Hand> hands(9);
+    int numberOfPlayers = 2;
+
+    initializeDeck(deck);
+
+    preflop(deck,holeCards[0],"5h","5c");
+    preflop(deck, holeCards[1],"4c", "4h");
+    flop(deck,communityCards,"4s","4d","5d");
+    turn(deck,communityCards,"5s");
+    river(deck, communityCards, "9c");
+
+    // Populate known cards with community cards
+    for (int i = 0; i < 5; i++) {
+        knownCards.push_back(communityCards[i]);
+    }
+
+    for (int i = 0; i < numberOfPlayers; i++) {
+        // Clear hole cards
+        // Going to have to modify this based on stage of play.
+        // TODO: > 3 flop, >4 turn, >5 river
+        while (knownCards.size() > 5) {
+            knownCards.pop_back();
+        }
+
+        // Populate known cards with hole cards
+        for (int j = 0; j < 2; j++) {
+            knownCards.push_back(holeCards[i][j]);
+        }
+
+        findHand_FourOfAKind(knownCards, hands, i);
+    }
 
     return 0;
 }

@@ -265,11 +265,45 @@ bool getPair_bool(vector<int> handValues, vector<int> tableValues) {
     return pairFound;
 }
 
-void header(vector<Card>& hand, vector<Card>& table, vector<Card>& deck, int handsInPlay) {
+void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int handsInPlay) {
     cout << "Hand:  ";
     printCards(hand);
     cout << "Table: ";
     printCards(table);
     cout << "Deck:  " << deck.size() << " cards left" << endl;
     cout << "Hands in play: " << handsInPlay << endl;
+}
+
+void findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber) {
+    // Count cards to find four of a kind
+    int searchNumber;
+    int startSearchAt;
+    int count;
+    bool fourOfAKindFound = false;
+    vector<int> indices;
+
+    for (int j = 0; j < 3; j++) {
+        searchNumber = knownCards[j].value;
+        startSearchAt = 1;
+        count = 1;
+        indices.clear();
+
+        for (int k = startSearchAt; k < knownCards.size(); k++) {
+            if (!fourOfAKindFound) {
+                if (searchNumber == knownCards[k].value) {
+                    count++;
+                    indices.push_back(k);
+                }
+                if (count == 4) {
+                    fourOfAKindFound = true;
+                    hands[playerNumber].fourOfAKind = 1;
+                    for (int i = 0; i<4; i++){
+                        hands[playerNumber].fiveCards.push_back(knownCards[indices[i]]);
+                    }
+                    cout << "Player " << playerNumber+1 << " has " << hands[playerNumber].fourOfAKind << " four of a kind : ";
+                    printCards(hands[playerNumber].fiveCards);
+                }
+            }
+        }
+    }
 }

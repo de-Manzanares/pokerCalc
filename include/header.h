@@ -16,8 +16,8 @@ struct Card {
 };
 
 struct Hand {
-    int fourOfAKind;
-    int threeOfAKind;
+    int fourOfAKind = 0;
+    int threeOfAKind = 0;
     int pair = 0;
     vector<Card> fiveCards = {};
 };
@@ -72,5 +72,7 @@ void simulationHighCardWithRiver();
 void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int handsInPlay);
 
 void simulation();
+
+void findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber);
 
 #endif //POKERCALC_HEADER_H
