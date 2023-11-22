@@ -264,3 +264,12 @@ bool getPair_bool(vector<int> handValues, vector<int> tableValues) {
     }
     return pairFound;
 }
+
+void header(vector<Card>& hand, vector<Card>& table, vector<Card>& deck, int handsInPlay) {
+    cout << "Hand:  ";
+    printCards(hand);
+    cout << "Table: ";
+    printCards(table);
+    cout << "Deck:  " << deck.size() << " cards left" << endl;
+    cout << "Hands in play: " << handsInPlay << endl;
+}

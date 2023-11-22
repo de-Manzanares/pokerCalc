@@ -58,4 +58,10 @@ void simulationPair(int SAMPLES);
 void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValues, vector<int> &deckValues,
                     int handsInPlay);
 
+void analyticalPair(vector<int> &hand, vector<int> &table, vector<int> &deck, int handsInPlay);
+
+void simulationHighCardWithRiver();
+
+void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int handsInPlay);
+
 #endif //POKERCALC_HEADER_H

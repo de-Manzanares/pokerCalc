@@ -3,50 +3,124 @@
 using namespace std;
 
 int main() {
-    bool DEBUG = true;
 
     vector<Card> deck = {};
     vector<Card> hand = {};
     vector<Card> table = {};
-    int HANDS_IN_PLAY;
+    int HANDS_IN_PLAY = 1;
+    int SAMPLES = 100'000;
+
+    vector<int> handValues;
+    vector<int> tableValues;
+    vector<int> deckValues;
+    vector<int> handAndTableValues;
+    int highCard;
 
     initializeDeck(deck);
 
-    if (DEBUG) {
-        cout << "DEBUG MODE" << endl;
-        HANDS_IN_PLAY = 1;
-        preflop(deck, hand, "14h", "14d");
-        flop(deck, table, "5s", "12c", "13d");
-        turn(deck, table, "10h");
-        river(deck, table, "9h");
-    } else if (!DEBUG) {
-        HANDS_IN_PLAY = randomHandsInPlay();
-        randomHandAndCommunityCards(hand, table, deck);
-    }
+    // Random
+    // HANDS_IN_PLAY = randomHandsInPlay();
+    // randomHandAndCommunityCards(hand, table, deck);
 
-    cout << "Hand:  ";
-    printCards(hand);
-    cout << "Table: ";
-    printCards(table);
-    cout << "Deck:  " << deck.size() << " cards left" << endl;
-    cout << "Hands in play: " << HANDS_IN_PLAY << endl;
+    // ----------------------------------
+    // Preflop
+    // ----------------------------------
 
-    vector<int> handValues = getValues(hand);
-    vector<int> tableValues = getValues(table);
-    vector<int> deckValues = getValues(deck);
-    vector<int> handAndTableValues = getValues(hand, table);
+    preflop(deck, hand, "13h", "12d");
 
-    int highCard = myHighCard_fromCards(hand);
+    handValues = getValues(hand);
+    tableValues = getValues(table);
+    deckValues = getValues(deck);
+    handAndTableValues = getValues(hand, table);
+    highCard = myHighCard_fromCards(hand);
 
+    cout << "\n---------------------------------------------------------------\n"
+         << "Preflop\n";
+    cout << "\nYour high card: " << highCard << endl;
+    cout << "\nProbability that your high card is the highest card in play: \n";
+    cout << "---------------------------------------------------------------\n" << endl;
+    header(hand, table, deck, HANDS_IN_PLAY);
+
+    analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(SAMPLES, highCard, deckValues, HANDS_IN_PLAY);
+    cout << endl << endl;
+
+    // ----------------------------------
+    // Flop
+    // ----------------------------------
+
+    flop(deck, table, "5s", "12c", "11d");
+
+    cout << "\n---------------------------------------------------------------\n"
+         << "Flop\n";
     cout << "\nYour high card: " << highCard << endl;
     cout << "\nProbability that your high card is the highest card in play: \n";
     cout << "---------------------------------------------------------------\n" << endl;
 
+    handValues = getValues(hand);
+    tableValues = getValues(table);
+    deckValues = getValues(deck);
+    handAndTableValues = getValues(hand, table);
+    highCard = myHighCard_fromCards(hand);
+
+    header(hand, table, deck, HANDS_IN_PLAY);
+
     analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
-    simulationHigherCard(100'000, highCard, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(SAMPLES, highCard, deckValues, HANDS_IN_PLAY);
     cout << endl << endl;
 
+    // ----------------------------------
+    // Turn
+    // ----------------------------------
 
+    turn(deck, table, "14h");
+
+    cout << "\n---------------------------------------------------------------\n"
+         << "Turn\n";
+    cout << "\nYour high card: " << highCard << endl;
+    cout << "\nProbability that your high card is the highest card in play: \n";
+    cout << "---------------------------------------------------------------\n" << endl;
+
+    handValues = getValues(hand);
+    tableValues = getValues(table);
+    deckValues = getValues(deck);
+    handAndTableValues = getValues(hand, table);
+    highCard = myHighCard_fromCards(hand);
+
+    header(hand, table, deck, HANDS_IN_PLAY);
+
+    analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(SAMPLES, highCard, deckValues, HANDS_IN_PLAY);
+    cout << endl << endl;
+
+    // ----------------------------------
+    // River
+    // ----------------------------------
+
+    river(deck, table, "9h");
+
+    cout << "\n---------------------------------------------------------------\n"
+         << "River\n";
+    cout << "\nYour high card: " << highCard << endl;
+    cout << "\nProbability that your high card is the highest card in play: \n";
+    cout << "---------------------------------------------------------------\n" << endl;
+
+    handValues = getValues(hand);
+    tableValues = getValues(table);
+    deckValues = getValues(deck);
+    handAndTableValues = getValues(hand, table);
+    highCard = myHighCard_fromCards(hand);
+
+    header(hand, table, deck, HANDS_IN_PLAY);
+
+    analyticalHigherCard(handValues, tableValues, deckValues, HANDS_IN_PLAY);
+    simulationHigherCard(SAMPLES, highCard, deckValues, HANDS_IN_PLAY);
+    cout << endl << endl;
+
+    return 0;
+
+    // Pair stuff
+    /*
     vector<int> pair = getPair(handValues, tableValues);
 
     cout << "Your pair: " << pair[0] << " " << pair[1] << endl << endl;
@@ -54,6 +128,7 @@ int main() {
     cout << "---------------------------------------------------------------\n" << endl;
     //simulationPairOld(100'000);
     simulationPair(1'000'000, handValues, tableValues, deckValues,HANDS_IN_PLAY);
+    analyticalPair(handValues, tableValues, deckValues, HANDS_IN_PLAY);
+    */
 
-    return 0;
 }

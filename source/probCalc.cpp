@@ -1,5 +1,3 @@
-// Calculate probability one hand in play being a 7 and 4
-
 #include "header.h"
 #include <iostream>
 #include <iomanip>
@@ -297,6 +295,8 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
         countSamples++;
     }
 
+    // Reset deck for next simulation
+    deckValues = copy;
 
     probabilityLose = (double) countHigherPair / countSamples;
     probabilityDraw = (double) countEqualPair / countSamples;
@@ -304,8 +304,7 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
 
     cout << "Experimental   Win:  " << 1 - probabilityLose - probabilityDraw << endl;
-    cout << "               Draw: " << probabilityDraw << "\tPercent diff. : "
-         << (abs(probabilityDraw - (1.0 / 990.0)) * 100) / (1.0 / 990.0) << endl;
+    cout << "               Draw: " << probabilityDraw << endl;
     cout << "               Lose: " << probabilityLose;
     cout << endl << endl;
 
@@ -317,9 +316,53 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
          << "Time: " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << " ms"
          << std::endl;
 }
+
+void simulationHighCardWithRiver() {
+
+}
 //----------------------------------------------------------------------------------------------------------------------
 // ANALYTICAL
 //----------------------------------------------------------------------------------------------------------------------
+
+void analyticalPair(vector<int> &hand, vector<int> &table, vector<int> &deck, int handsInPlay) {
+    int deckSize = deck.size();
+    int equalCardsLeftInDeck = 4;
+    int higherCardsLeftInDeck;
+    int higherCardsOnTable = 0;
+    int lowerCardsLeftInDeck = 0;
+    double probabilityDraw = 0;
+    double probabilityNotLose = 1;
+    vector<int> myPair = getPair(hand, table);
+
+    // for concise expressions
+    double p;
+    double q;
+
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
+
+    // -----------------------------------------------
+    // Calculate the probability of losing
+    // -----------------------------------------------
+
+    // Count the higher cards on the table
+    for (int i = 0; i < table.size(); i++) {
+        if (table[i] > myPair[0]) {
+            higherCardsOnTable++;
+        }
+    }
+
+    // Calculate higher cards left in deck
+    higherCardsLeftInDeck = ((14 - myPair[0]) * 4 - higherCardsOnTable);
+
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    // Output
+    cout << "Analytical     Win:  " << probabilityNotLose - probabilityDraw << endl
+         << "               Draw: " << probabilityDraw << endl
+         << "               Lose: " << 1 - probabilityNotLose << endl;
+    cout << "Time: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " ms" << endl << endl;
+
+}
 
 void analyticalHigherCard(vector<int> &hand, vector<int> &table, vector<int> &deck, int handsInPlay) {
     int deckSize = deck.size();
@@ -349,6 +392,7 @@ void analyticalHigherCard(vector<int> &hand, vector<int> &table, vector<int> &de
         }
     }
 
+    // Calculate higher cards left in deck
     higherCardsLeftInDeck = ((14 - highCard) * 4 - higherCardsOnTable);
 
     // For concise expressions

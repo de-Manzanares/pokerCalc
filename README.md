@@ -1,5 +1,8 @@
+## The high-card game
+
 Probabilities are calculated for a simplified version of poker.
 Additional rules of the game will be added over time.
+
 
 ## Current rules:
 
@@ -30,6 +33,7 @@ High(c): The count of cards of a higher rank than a given card in E.
 ### Probability of a Draw
 
 With the current rules, a draw is when two or more players share the high card. 
+This formula calculates the probability that at least one other player has at least one card of the same rank (the high card). 
 
 ![](images/simpleDrawProb.png)
 
