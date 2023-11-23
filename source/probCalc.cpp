@@ -321,7 +321,7 @@ void simulation() {
 
     int numberOfPlayers = 1;
     int testCount = 0;
-    int SAMPLES = 1'000'000;
+    int SAMPLES = 100'000;
 
     random_device rd;
     mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
@@ -414,7 +414,7 @@ void simulation() {
 
         // Populate known cards with community cards
         for (int i = 0; i < 5; i++) {
-            knownCards.push_back(communityCards[i]);
+            knownCards = communityCards;
         }
 
         for (int i = 0; i < numberOfPlayers; i++) {

@@ -278,32 +278,42 @@ int findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playe
     // Count cards to find four of a kind
     int testCount = 0;
     int searchNumber;
-    int startSearchAt;
     int count;
     bool fourOfAKindFound = false;
     vector<int> indices;
 
     for (int j = 0; j < 3; j++) {
         searchNumber = knownCards[j].value;
-        startSearchAt = 1;
         count = 1;
         indices.clear();
+        indices.push_back(j);
 
-        for (int k = startSearchAt; k < knownCards.size(); k++) {
-            if (!fourOfAKindFound) {
-                if (searchNumber == knownCards[k].value) {
+        for (int k = j + 1; k < knownCards.size(); k++) {
+            // if (searchNumber == knownCards[k].value) {
+            //     count++;
+            //     indices.push_back(k);
+            // }
+            if (searchNumber == knownCards[k].value) {
+                if (std::find(indices.begin(), indices.end(), k) == indices.end()) { // Ensure unique index
                     count++;
                     indices.push_back(k);
-                }
-                if (count == 4) {
-                    fourOfAKindFound = true;
-                    testCount++;
-                    hands[playerNumber].fourOfAKind = 1;
-                    for (int i = 0; i<4; i++){
-                        hands[playerNumber].fiveCards.push_back(knownCards[indices[i]]);
+                    if (count == 4) {
+                        break; // Exit the loop as soon as four of a kind is found
                     }
                 }
             }
+        }
+        if (count == 4) {
+            fourOfAKindFound = true;
+            testCount++;
+            cout << "Test count: " << testCount << endl;
+            printCards(knownCards);
+            hands[playerNumber].fourOfAKind = 1;
+            for (int i = 0; i < 4; i++) {
+                hands[playerNumber].fiveCards.push_back(knownCards[indices[i]]);
+            }
+            printCards(hands[playerNumber].fiveCards);
+            break;
         }
     }
     return testCount;
