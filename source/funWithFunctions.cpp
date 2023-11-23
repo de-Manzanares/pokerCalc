@@ -274,8 +274,9 @@ void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int han
     cout << "Hands in play: " << handsInPlay << endl;
 }
 
-void findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber) {
+int findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber) {
     // Count cards to find four of a kind
+    int testCount = 0;
     int searchNumber;
     int startSearchAt;
     int count;
@@ -296,14 +297,14 @@ void findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int play
                 }
                 if (count == 4) {
                     fourOfAKindFound = true;
+                    testCount++;
                     hands[playerNumber].fourOfAKind = 1;
                     for (int i = 0; i<4; i++){
                         hands[playerNumber].fiveCards.push_back(knownCards[indices[i]]);
                     }
-                    cout << "Player " << playerNumber+1 << " has " << hands[playerNumber].fourOfAKind << " four of a kind : ";
-                    printCards(hands[playerNumber].fiveCards);
                 }
             }
         }
     }
+    return testCount;
 }

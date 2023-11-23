@@ -73,6 +73,6 @@ void header(vector<Card> &hand, vector<Card> &table, vector<Card> &deck, int han
 
 void simulation();
 
-void findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber);
+int findHand_FourOfAKind(vector<Card> knownCards, vector<Hand> &hands, int playerNumber);
 
 #endif //POKERCALC_HEADER_H

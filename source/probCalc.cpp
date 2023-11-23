@@ -319,7 +319,9 @@ void simulationPair(int SAMPLES, vector<int> &handValues, vector<int> &tableValu
 
 void simulation() {
 
-    int numberOfPlayers = 9;
+    int numberOfPlayers = 1;
+    int testCount = 0;
+    int SAMPLES = 1'000'000;
 
     random_device rd;
     mt19937 gen(std::chrono::system_clock::now().time_since_epoch().count());
@@ -336,116 +338,149 @@ void simulation() {
     vector<Hand> hands(9);      // To create hands of the five best cards for each player
 
     initializeDeck(deck);    // Standard deck, 13 values, 4 suits.
+    vector<Card> copy = deck;   // For loop
     indexLimit = 52 - 1;
 
-    // Deal hole cards to players
-    // A. First card to each player B. Second card to each player ... because why not?
-    // First card to each player
-    for (int i = 0; i < numberOfPlayers; i++) {
-        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
-        index = dis(gen);
-        card = deck[index];
-        holeCards[i].push_back(card);
-        deck.erase(deck.begin() + index);
-        cardsDealt++;
-    }
-    // Second card to each player
-    for (int i = 0; i < numberOfPlayers; i++) {
-        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
-        index = dis(gen);
-        card = deck[index];
-        holeCards[i].push_back(card);
-        deck.erase(deck.begin() + index);
-        cardsDealt++;
-    }
+    chrono::steady_clock::time_point begin = chrono::steady_clock::now();
 
-    // Print hole cards
-    cout << "\nHole Cards:\n\n";
-    for (int i = 0; i < numberOfPlayers; i++) {
-        cout << "Player " << i + 1 << ": ";
-        printCards(holeCards[i]);
-    }
+    for (int s = 0; s < SAMPLES; s++) {
 
-    // Deal community cards
-    // Leaving out burn cards because it won't affect probabilities
-    // Flop
-    for (int i = 0; i < 3; i++) {
-        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
-        index = dis(gen);
-        card = deck[index];
-        communityCards.push_back(card);
-        deck.erase(deck.begin() + index);
-        cardsDealt++;
-    }
-    // Turn
-    for (int i = 0; i < 1; i++) {
-        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
-        index = dis(gen);
-        card = deck[index];
-        communityCards.push_back(card);
-        deck.erase(deck.begin() + index);
-        cardsDealt++;
-    }
-    // River
-    for (int i = 0; i < 1; i++) {
-        uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
-        index = dis(gen);
-        card = deck[index];
-        communityCards.push_back(card);
-        deck.erase(deck.begin() + index);
-        cardsDealt++;
-    }
+        // Reset for next loop
+        deck = copy;
+        communityCards.clear();
+        for (int i = 0; i < 9; i++) {
+            holeCards[i].clear();
+            hands[i].fourOfAKind = 0;
+            hands[i].threeOfAKind = 0;
+            hands[i].pair = 0;
+            hands[i].fiveCards = {};
+        }
+        cardsDealt = 0;
 
-    // Print community cards
-    cout << "\n\nCommunity Cards:\n\n";
-    printCards(communityCards);
-
-    // Make hands
-    // First, detect four of a kind
-    // Only one four of a kind is possible per hand, two across all the players
-
-
-    /*
-    for (int i = 0; i < numberOfPlayers; i++) {
-
-        bool pocketPair = false;
-
-        // Check for pair in hole cards
-        if (holeCards[i][0].value == holeCards[i][1].value) {
-            for (int j = 0; j < 2; j++) {
-                hands[i].fiveCards.push_back(holeCards[i][j]);
-                hands[i].pair++;
-                pocketPair = true;
-            }
+        // Deal hole cards to players
+        // A. First card to each player B. Second card to each player ... because why not?
+        // First card to each player
+        for (int i = 0; i < numberOfPlayers; i++) {
+            uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+            index = dis(gen);
+            card = deck[index];
+            holeCards[i].push_back(card);
+            deck.erase(deck.begin() + index);
+            cardsDealt++;
+        }
+        // Second card to each player
+        for (int i = 0; i < numberOfPlayers; i++) {
+            uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+            index = dis(gen);
+            card = deck[index];
+            holeCards[i].push_back(card);
+            deck.erase(deck.begin() + index);
+            cardsDealt++;
         }
 
-        // Check for pair with table
-        if (!pocketPair) {
+        // Deal community cards
+        // Leaving out burn cards because it won't affect probabilities
+        // Flop
+        for (int i = 0; i < 3; i++) {
+            uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+            index = dis(gen);
+            card = deck[index];
+            communityCards.push_back(card);
+            deck.erase(deck.begin() + index);
+            cardsDealt++;
+        }
+        // Turn
+        for (int i = 0; i < 1; i++) {
+            uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+            index = dis(gen);
+            card = deck[index];
+            communityCards.push_back(card);
+            deck.erase(deck.begin() + index);
+            cardsDealt++;
+        }
+        // River
+        for (int i = 0; i < 1; i++) {
+            uniform_int_distribution<> dis(0, indexLimit - cardsDealt);
+            index = dis(gen);
+            card = deck[index];
+            communityCards.push_back(card);
+            deck.erase(deck.begin() + index);
+            cardsDealt++;
+        }
+
+        // Make hands
+        // First, detect four of a kind
+        // Only one four of a kind is possible per hand, two across all the players
+
+        // Populate known cards with community cards
+        for (int i = 0; i < 5; i++) {
+            knownCards.push_back(communityCards[i]);
+        }
+
+        for (int i = 0; i < numberOfPlayers; i++) {
+            // Clear hole cards
+            // Going to have to modify this based on stage of play.
+            // TODO: > 3 flop, >4 turn, >5 river
+            while (knownCards.size() > 5) {
+                knownCards.pop_back();
+            }
+
+            // Populate known cards with hole cards
             for (int j = 0; j < 2; j++) {
-                for (int k = 0; k < 5; k++) {
-                    if (holeCards[i][j].value == communityCards[k].value) {
-                        hands[i].fiveCards.push_back(holeCards[i][j]);
-                        hands[i].fiveCards.push_back(communityCards[k]);
-                        hands[i].pair++;
-                    }
+                knownCards.push_back(holeCards[i][j]);
+            }
+
+            testCount += findHand_FourOfAKind(knownCards, hands, i);
+        }
+    }
+
+    chrono::steady_clock::time_point end = chrono::steady_clock::now();
+
+    cout << "Pos. Count:  " << testCount << "\n"
+         << "Samples:     " << SAMPLES << "\n"
+         << "Probability: " << (double) testCount / SAMPLES << "\n\n"
+         << "Time: " << chrono::duration_cast<chrono::milliseconds>(end - begin).count() << " ms" << endl << endl;
+/*
+for (int i = 0; i < numberOfPlayers; i++) {
+
+    bool pocketPair = false;
+
+    // Check for pair in hole cards
+    if (holeCards[i][0].value == holeCards[i][1].value) {
+        for (int j = 0; j < 2; j++) {
+            hands[i].fiveCards.push_back(holeCards[i][j]);
+            hands[i].pair++;
+            pocketPair = true;
+        }
+    }
+
+    // Check for pair with table
+    if (!pocketPair) {
+        for (int j = 0; j < 2; j++) {
+            for (int k = 0; k < 5; k++) {
+                if (holeCards[i][j].value == communityCards[k].value) {
+                    hands[i].fiveCards.push_back(holeCards[i][j]);
+                    hands[i].fiveCards.push_back(communityCards[k]);
+                    hands[i].pair++;
                 }
             }
         }
     }
+}
 
 
-    // Check pair
-    cout << "\n\nPair: \n\n";
-    for (int i = 0; i<numberOfPlayers; i++){
-        if (hands[i].pair > 0){
-            cout << "Player " << i+1 << ": ";
-            for (int j=0; j<hands[i].fiveCards.size(); j++){
-                cout << hands[i].fiveCards[j].id << " ";
-            }
-            cout << endl;
+// Check pair
+cout << "\n\nPair: \n\n";
+for (int i = 0; i<numberOfPlayers; i++){
+    if (hands[i].pair > 0){
+        cout << "Player " << i+1 << ": ";
+        for (int j=0; j<hands[i].fiveCards.size(); j++){
+            cout << hands[i].fiveCards[j].id << " ";
         }
+        cout << endl;
     }
-    */
+}
+*/
 }
 
 
